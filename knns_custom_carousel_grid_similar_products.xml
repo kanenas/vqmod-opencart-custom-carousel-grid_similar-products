@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification
+	xmlns="https://github.com/vqmod/vqmod"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://github.com/vqmod/vqmod https://raw.githubusercontent.com/vqmod/vqmod/master/vqmod.xsd"
+	>
+	<id><![CDATA[[VQMOD] Custom (Carousel Grid) Similar Products]]></id>
+	<version>1.0.0</version>
+	<vqmver>2.6.3</vqmver>
+	<author>kanenas.net (aka Nikolas Branis) - nbran@kanenas.net</author>
+    <file path="catalog/controller/" name="module/similar_products.php" error="log">
+        <operation error="skip">
+            <search position="after"><![CDATA['name'       => $result['name'],]]></search>
+            <add><![CDATA[
+            // kanenas: knns_journal2_grid_manufacturer_name.xml (start) <<
+            'manufacturer' => $result['manufacturer'],
+            'manufacturer_href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $result['manufacturer_id']),
+            // kanenas: knns_journal2_grid_manufacturer_name.xml (end) <<
+            ]]></add>
+        </operation>
+    </file>
+	<file path="catalog/view/theme/default/template/module/" name="similar_products.tpl" error="log">
+		<operation error="skip">
+			<search position="before"><![CDATA[<h3><?php echo $heading_title; ?></h3>]]></search>
+			<add><![CDATA[<div id="carousel-knns" class="carousel-knns-01 box journal-carousel carousel-product" style="max-width: 1220px;">]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="replace"><![CDATA[<h3><?php echo $heading_title; ?></h3>]]></search>
+			<add><![CDATA[
+    <div>
+        <div class="htabs box-heading single-tab">
+            <a href="#carousel-knns" class="atab selected"><?php echo $heading_title; ?></a>
+        </div>
+			]]></add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/default/template/module/" name="similar_products_products.tpl" error="log">
+		<operation error="skip">
+			<search position="replace" offset="79"><![CDATA[<div class="row product-layout">]]></search>
+			<add><![CDATA[
+            <div id="carousel-knns" class="tab-content box-content" style="display: block;">
+                <div class="swiper">
+                <div class="swiper-container swiper-container-horizontal">
+                    <div class="swiper-wrapper">
+                        <?php foreach ($products as $product) { ?>
+                            <div class="product-grid-item swiper-slide display-icon inline-button xs-50 sm-33 md-25 lg-16 xl-16 swiper-slide-active" style="width: 186.667px; margin-right: 20px;">
+                                <div class="product-wrapper">
+                                    <?php if (isset($product['thumb'])) { ?>
+                                        <div class="image">
+                                            <a href="<?php echo $product['href']; ?>" <?php if (isset($product['thumb2']) && $product['thumb2']): ?> class="has-second-image" style="<?php echo $image_border_css; ?>;background: url('<?php echo $product['thumb2']; ?>') no-repeat;" <?php else: echo 'style=""'; endif; ?>>
+                                                <img class="first-image" width="169" height="169" src="<?php echo $product['thumb']; ?>" title="<?php echo $product['name']; ?>" alt="<?php echo $product['name']; ?>"/>
+                                            </a>
+                                            <?php if ($this->journal2->settings->get('product_grid_wishlist_icon_position') === 'image' && $this->journal2->settings->get('product_grid_wishlist_icon_display', '') === 'icon'): ?>
+                                                <div class="wishlist"><a onclick="addToWishList('<?php echo $product['product_id']; ?>');" class="hint--top" data-hint="<?php echo $button_wishlist; ?>"><i class="wishlist-icon"></i><span class="button-wishlist-text"><?php echo $button_wishlist; ?></span></a></div>
+                                                <div class="compare"><a onclick="addToCompare('<?php echo $product['product_id']; ?>');" class="hint--top" data-hint="<?php echo $button_compare; ?>"><i class="compare-icon"></i><span class="button-compare-text"><?php echo $button_compare; ?></span></a></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php } ?>
+                                    <div class="product-details">
+                                        <div class="caption">
+                                            <?php if ($product['manufacturer'] != '') { ?>
+                                              <div class="knns-manufacturer">
+                                                <a href="<?php echo $product['manufacturer_href']; ?>" title="<?php echo $product['manufacturer']; ?>"><?php echo $product['manufacturer']; ?></a>
+                                              </div>
+                                            <?php }?>
+                                            <div class="name"><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></div>
+                                            <div class="description"><?php echo $product['description']; ?></div>
+                                            <?php if ($product['price']) { ?>
+                                                <div class="price">
+                                                    <?php if (!$product['special']) { ?>
+                                                        <?php echo $product['price']; ?>
+                                                    <?php } else { ?>
+                                                        <span class="price-old"><?php echo $product['price']; ?></span> <span class="price-new" <?php echo isset($product['date_end']) && $product['date_end'] ? "data-end-date='{$product['date_end']}'" : ""; ?>><?php echo $product['special']; ?></span>
+                                                    <?php } ?>
+                                                    <?php if ($product['tax']) { ?>
+                                                        <hr>
+                                                        <span class="price-tax"><?php echo $text_tax; ?><?php echo $product['tax']; ?></span>
+                                                    <?php } ?>
+                                                </div>
+                                            <?php } ?>
+                                            <?php if ($product['rating']) { ?>
+                                                <div class="rating">
+                                                    <?php for ($i = 1; $i <= 5; $i++) { ?>
+                                                        <?php if ($product['rating'] < $i) { ?>
+                                                            <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
+                                                        <?php } else { ?>
+                                                            <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                                                        <?php } ?>
+                                                    <?php } ?>
+                                                </div>
+                                            <?php } ?>
+                                        </div>
+                                        <div class="button-group">
+                                            <?php if (Journal2Utils::isEnquiryProduct($this, $product)): ?>
+                                                <div class="cart enquiry-button">
+                                                    <a href="javascript:Journal.openPopup('<?php echo $this->journal2->settings->get('enquiry_popup_code'); ?>', '<?php echo $product['product_id']; ?>');" data-clk="addToCart('<?php echo $product['product_id']; ?>');" class="button hint--top" data-hint="<?php echo $this->journal2->settings->get('enquiry_button_text'); ?>"><?php echo $this->journal2->settings->get('enquiry_button_icon') . '<span class="button-cart-text">' . $this->journal2->settings->get('enquiry_button_text') . '</span>'; ?></a>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="cart <?php echo isset($product['labels']) && is_array($product['labels']) && isset($product['labels']['outofstock']) ? 'outofstock' : ''; ?>">
+                                                    <a onclick="addToCart('<?php echo $product['product_id']; ?>', '1');" class="button hint--top" data-hint="<?php echo $button_cart; ?>"><i class="button-left-icon"></i><span class="button-cart-text"><?php echo $button_cart; ?></span><i class="button-right-icon"></i></a>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="wishlist"><a onclick="addToWishList('<?php echo $product['product_id']; ?>');" class="hint--top" data-hint="<?php echo $button_wishlist; ?>"><i class="wishlist-icon"></i><span class="button-wishlist-text"><?php echo $button_wishlist; ?></span></a></div>
+                                            <div class="compare"><a onclick="addToCompare('<?php echo $product['product_id']; ?>');" class="hint--top" data-hint="<?php echo $button_compare; ?>"><i class="compare-icon"></i><span class="button-compare-text"><?php echo $button_compare; ?></span></a></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+                <?php //if ($arrows !== 'none'): ?>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                <?php //endif; ?>
+                </div>
+            </div>
+
+
+        <script>
+            (function () {
+                $('#carousel-knns .htabs a.atab').tabs();
+
+                var grid = $.parseJSON('[[0,2],[470,3],[760,4],[980,6],[1100,6]]');
+
+                var breakpoints = {
+                    470: {
+                        slidesPerView: grid[0][1],
+                        slidesPerGroup: grid[0][1]
+                    },
+                    760: {
+                        slidesPerView: grid[1][1],
+                        slidesPerGroup: grid[1][1]
+                    },
+                    980: {
+                        slidesPerView: grid[2][1],
+                        slidesPerGroup: grid[2][1]
+                    },
+                    1220: {
+                        slidesPerView: grid[3][1],
+                        slidesPerGroup: grid[3][1]
+                    }
+                };
+
+                var current = null;
+
+                $('#carousel-knns .htabs a.atab').click(function () {
+                    if (this === current) {
+                        return;
+                    }
+
+                    current = this;
+                    
+                    var opts = {
+                        slidesPerView: grid[4][1],
+                        slidesPerGroup: grid[4][1],
+                        breakpoints: breakpoints,
+                        spaceBetween: parseInt('20', 10),
+                        pagination: false,
+                        paginationClickable: true,
+                        nextButton: $($(this).attr('href') + ' .swiper-button-next'),
+                        prevButton: $($(this).attr('href') + ' .swiper-button-prev'),
+                        autoplay: 0,
+                        autoplayStopOnHover: true,
+                        speed: 400,
+                        touchEventsTarget: false,
+                        preventClicks: false,
+                        preventClicksPropagation: false
+                    };
+
+                    $($(this).attr('href') + ' .swiper-container').swiper(opts);
+
+                    $($(this).attr('href') + ' .product-grid-item > div').each(function () {
+                        var $new = $(this).find('.price-new');
+                        if ($new.length && $new.attr('data-end-date')) {
+                            $(this).find('.image').append('<div class="countdown"></div>');
+                        }
+                        Journal.countdown($(this).find('.countdown'), $new.attr('data-end-date'));
+                    });
+
+                    if (!Journal.isFlexboxSupported) {
+                        Journal.equalHeight($('#carousel-knns .product-grid-item'), '.name');
+                        Journal.equalHeight($('#carousel-knns .product-grid-item'), '.description');
+                    }
+                });
+
+                $('#carousel-knns .htabs a.atab[href="#carousel-knns"]').click();
+            })();
+        </script>
+    </div>
+</div>
+			]]></add>
+		</operation>
+	</file>
+</modification>
