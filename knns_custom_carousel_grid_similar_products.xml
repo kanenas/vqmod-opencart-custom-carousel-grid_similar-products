@@ -8,17 +8,23 @@
 	<version>1.0.0</version>
 	<vqmver>2.6.3</vqmver>
 	<author>kanenas.net (aka Nikolas Branis) - nbran@kanenas.net</author>
-    <file path="catalog/controller/" name="module/similar_products.php" error="log">
-        <operation error="skip">
-            <search position="after"><![CDATA['name'       => $result['name'],]]></search>
-            <add><![CDATA[
+	<file path="catalog/model/module/" name="similar_products.php" error="log">
+		<operation error="skip">
+			<search position="replace"><![CDATA[AND p.status = '1']]></search>
+			<add><![CDATA[AND p.status = '1' AND p.image <> '']]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/" name="module/similar_products.php" error="log">
+		<operation error="skip">
+			<search position="after"><![CDATA['name'       => $result['name'],]]></search>
+			<add><![CDATA[
             // kanenas: knns_journal2_grid_manufacturer_name.xml (start) <<
             'manufacturer' => $result['manufacturer'],
             'manufacturer_href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $result['manufacturer_id']),
             // kanenas: knns_journal2_grid_manufacturer_name.xml (end) <<
-            ]]></add>
-        </operation>
-    </file>
+            		]]></add>
+		</operation>
+	</file>
 	<file path="catalog/view/theme/default/template/module/" name="similar_products.tpl" error="log">
 		<operation error="skip">
 			<search position="before"><![CDATA[<h3><?php echo $heading_title; ?></h3>]]></search>
